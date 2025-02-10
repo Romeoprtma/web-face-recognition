@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Data Absensi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- ✅ CDN Lucide Icons (Dari unpkg) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-100 p-10">
+    <div class="max-w-4xl mx-auto bg-white p-6 shadow-md rounded-lg">
+        <h2 class="text-2xl font-bold mb-4">Data Absensi</h2>
+        <table class="w-full border-collapse border border-gray-300">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="border p-2">ID</th>
+                    <th class="border p-2">Siswa ID</th>
+                    <th class="border p-2">Hari</th>
+                    <th class="border p-2">Mapel</th>
+                    <th class="border p-2">NIS</th>
+                    <th class="border p-2">Nama</th>                   
+                    <th class="border p-2">Ruang Kelas</th>
+                    <th class="border p-2">Waktu</th>
+                    <th class="border p-2">Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="data-absensi"></tbody>
+        </table>
+    </div>
+
+    <div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg w-96">
+            <h3 class="text-xl font-semibold mb-4">Edit Data Absensi</h3>
+            <input type="hidden" id="editId">
+            <input id="editSiswaId" type="text" class="w-full p-2 border mb-2" placeholder="Siswa ID">
+            <input id="editHari" type="text" class="w-full p-2 border mb-2" placeholder="Hari">
+            <input id="editWaktu" type="text" class="w-full p-2 border mb-2" placeholder="Waktu">
+            <button onclick="updateAbsensi()" class="bg-blue-500 text-white px-4 py-2 rounded">Update</button>
+            <button onclick="closeModal()" class="bg-gray-500 text-white px-4 py-2 rounded">Batal</button>
+        </div>
+    </div>
+
+    <script>
+        api_url = "https://absensi-wajah-api-09bc67be014c.herokuapp.com"
+        async function fetchDataAbsensi() {
+            const response = await fetch(`${api_url}/get_data_absensi`);
+            const result = await response.json();
+            const tbody = document.getElementById("data-absensi");
+            tbody.innerHTML = "";
+            
+            result.data.forEach(row => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td class='border p-2'>${row.id}</td>
+                    <td class='border p-2'>${row.siswa_id}</td>
+                    <td class='border p-2'>${row.hari}</td>
+                    <td class='border p-2'>${row.ruang_kelas}</td>
+                    <td class='border p-2'>${row.nis}</td>
+                    <td class='border p-2'>${row.nama}</td>
+                    <td class='border p-2'>${row.mapel}</td>
+                    <td class='border p-2'>${row.waktu_absensi}</td>
+                    <td class='border p-2'>
+                        <button onclick='editAbsensi(${row.id}, "${row.siswa_id}", "${row.hari}", "${row.ruang_kelas}", "${row.nis}", "${row.nama}", "${row.mapel}", "${row.waktu_absensi}")' class='text-yellow-500 p-2'>
+                            <i data-lucide="square-pen" class="text-blue-500"></i>
+                        </button>
+                        <button onclick='deleteAbsensi(${row.id})' class='text-red-500 p-2'>
+                            <i data-lucide="trash" class="text-red-500"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            lucide.createIcons();
+        }
+        
+        function editAbsensi(id, siswa_id, hari, waktu) {
+            document.getElementById("editId").value = id;
+            document.getElementById("editSiswaId").value = siswa_id;
+            document.getElementById("editHari").value = hari;
+            document.getElementById("editWaktu").value = waktu;
+            document.getElementById("editModal").classList.remove("hidden");
+        }
+
+        async function updateAbsensi() {
+            const id = document.getElementById("editId").value;
+            const siswa_id = document.getElementById("editSiswaId").value;
+            const hari = document.getElementById("editHari").value;
+            const waktu = document.getElementById("editWaktu").value;
+            
+            const response = await fetch(`${api_url}/edit_data_absensi/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ siswa_id, hari, waktu_absensi: waktu })
+            });
+            
+            const result = await response.json();
+            alert(result.message);
+            closeModal();
+            fetchDataAbsensi();
+        }
+        
+        async function deleteAbsensi(id) {
+            if (!confirm("Yakin ingin menghapus data ini?")) return;
+            
+            const response = await fetch(`${api_url}/delete_data_absensi/${id}`, { method: "DELETE" });
+            const result = await response.json();
+            alert(result.message);
+            fetchDataAbsensi();
+        }
+        
+        function closeModal() {
+            document.getElementById("editModal").classList.add("hidden");
+        }
+        
+        fetchDataAbsensi();
+    </script>
+</body>
+</html>

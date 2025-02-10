@@ -1,0 +1,71 @@
+
+
+/* Loader CSS */
+.loader {
+    width: 60px;
+    aspect-ratio: 4;
+    --_g: no-repeat radial-gradient(circle closest-side, #000 90%, #0000);
+    background: 
+        var(--_g) 0% 50%, 
+        var(--_g) 50% 50%, 
+        var(--_g) 100% 50%;
+    background-size: calc(100%/3) 100%;
+    animation: l7 1s infinite linear;
+}
+
+@keyframes l7 {
+    33% { background-size: calc(100%/3) 0%, calc(100%/3) 100%, calc(100%/3) 100% }
+    50% { background-size: calc(100%/3) 100%, calc(100%/3) 0%, calc(100%/3) 100% }
+    66% { background-size: calc(100%/3) 100%, calc(100%/3) 100%, calc(100%/3) 0% }
+}
+
+/* Overlay with blur effect */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgb(255, 255, 255);
+    display: none; /* Hidden by default */
+    justify-content: center;
+    align-items: center;
+}
+
+/* Loader inside the overlay */
+.overlay .loader {
+    display: block;
+    margin-top: 20px;
+}
+
+#capturedImage {
+    display: none; /* Hide the captured image initially */
+    margin-top: 20px;
+}
+
+#faceFrame {
+    width: 150px;  /* Ukuran frame wajah */
+    height: 150px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    display: hidden;
+  }
+  
+  .face-text {
+    position: absolute;
+    bottom: -30px; /* Posisi teks agar tidak menutupi wajah */
+    left: 50%;
+    transform: translateX(-50%);
+    color: black;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 14px;
+    display: hidden;
+  }
+  
